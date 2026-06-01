@@ -1,19 +1,10 @@
 name: 🐞 Nahlášení chyby
 description: Vytvořte hlášení o něčem, co nefunguje správně
 body:
-- type: markdown
-  attributes:
-    value: |
-      Více informací o našich zásadách správy issues naleznete zde: https://aka.ms/aspnet/issue-policies
-
-      Mějte prosím na paměti, že sledovač issues na GitHubu není určen jako obecné fórum podpory, ale pro hlášení **chyb nesouvisejících s bezpečností** a požadavků na nové funkce.
-
-      Pokud se domníváte, že máte problém, který ovlivňuje BEZPEČNOST platformy, nevytvářejte prosím issue, ale zašlete podrobnosti e-mailem na adresu secure@microsoft.com. Vaše hlášení může být způsobilé pro náš [bug bounty program](https://www.microsoft.com/en-us/msrc/bounty-dot-net-core), ale POUZE pokud je nahlášeno e-mailem.
-      Pro ostatní typy dotazů zvažte použití [StackOverflow](https://stackoverflow.com).
 - type: checkboxes
   attributes:
     label: Existuje již issue pro tento problém?
-    description: Prosím vyhledejte, zda issue pro vámi nalezený problém již existuje ([aspnetcore/issues](https://github.com/dotnet/aspnetcore/issues?q=is%3Aissue)). Více informací o našich zásadách správy issues je k dispozici [zde](https://aka.ms/aspnet/issue-policies).
+    description: Podívejte se, zda už neexistuje issue([skoleni-copilot-gcl/issues](https://github.com/mirekholec/skoleni-copilot-gcl/issues?q=is%3Aissue)).
     options:
     - label: Prohledal/a jsem existující issues
       required: true
@@ -25,47 +16,23 @@ body:
     required: true
 - type: textarea
   attributes:
-    label: Očekávané chování
-    description: Jasný a stručný popis toho, co jste očekával/a, že se stane.
-  validations:
-    required: false
-- type: textarea
-  attributes:
     label: Kroky k reprodukci
-    description: |
-      Milujeme ❤ kód! Ukažte nám [minimalistický projekt, který tento problém reprodukuje](https://github.com/dotnet/aspnetcore/blob/main/docs/repro.md) uložený ve veřejném repozitáři na GitHubu.
-      
-      Toto issue uzavřeme, pokud:
-      - Sdílený reprodukční projekt je příliš složitý. Nemůžeme zkoumat vlastní projekty, prosím neukazujte nás na ně.
-      - Nebudeme schopni reprodukovat chování, které popisujete.
-      - Reprodukční projekt je přiložen jako soubor `.zip`.
-      - GitHub repozitář s reprodukcí je nastaven jako `Private`.
+    description: Popište postup, jak chybu vyvolat (např. 1. Otevři aplikaci, 2. Klikni na...).
+    placeholder: |
+      1. ...
+      2. ...
+      3. ...
   validations:
-    required: false
+    required: true
 - type: textarea
   attributes:
-    label: Výjimky (pokud existují)
-    description: Uveďte výjimku, kterou dostanete při výskytu tohoto problému.
-    placeholder: 
+    label: Skutečné chování
+    description: Co se děje — co aplikace dělá špatně?
   validations:
-    required: false
-- type: input
-  attributes:
-    label: Verze .NET
-    description: |
-      Spusťte `dotnet --version`
-  validations:
-    required: false
+    required: true
 - type: textarea
   attributes:
-    label: Cokoliv dalšího?
-    description: |
-      - Verze ASP.NET Core:
-      - IDE (VS / VS Code / VS4Mac), které používáte, a jeho verze:
-      - Přiložte výstup příkazu `dotnet --info`:
-
-      Odkazy? Reference? Cokoliv, co nám poskytne více kontextu k problému, se kterým se setkáváte!
-
-      Tip: Obrázky nebo soubory s logy můžete přiložit kliknutím na tuto oblast pro její označení a následným přetažením souborů.
+    label: Očekávané chování
+    description: Co by se správně mělo stát?
   validations:
     required: false
