@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CopilotCal – Týdenní kalendář</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="app">
+        <!-- Hlavička aplikace -->
+        <header class="header">
+            <div class="header-left">
+                <h1 class="app-title">📅 CopilotCal</h1>
+                <span class="week-number" id="weekNumber"></span>
+                <span class="week-range" id="weekRange"></span>
+            </div>
+            <div class="header-right">
+                <button class="btn btn-nav" id="btnPrint" title="Tisk týdenního rozvrhu">🖨️</button>
+                <button class="btn btn-nav" id="btnPrev" title="Předchozí týden">◀</button>
+                <button class="btn btn-today" id="btnToday">Dnes</button>
+                <button class="btn btn-nav" id="btnNext" title="Další týden">▶</button>
+            </div>
+        </header>
+
+        <!-- Obsah: sidebar + kalendář -->
+        <div class="content">
+            <aside class="sidebar">
+                <h2 class="sidebar-title">Kategorie</h2>
+                <div class="category-list" id="categoryList"></div>
+            </aside>
+
+            <main class="calendar">
+                <!-- Záhlaví pro tisk (viditelné pouze při tisku) -->
+                <div class="print-header" id="printHeader">
+                    <h2 class="print-title">Týdenní rozvrh</h2>
+                    <span class="print-week-range" id="printWeekRange"></span>
+                </div>
+                <div class="calendar-header" id="calendarHeader"></div>
+                <div class="calendar-body" id="calendarBody">
+                    <div class="time-column" id="timeColumn"></div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Modal: Detail události -->
+    <div class="modal-overlay" id="eventDetailModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h2 class="modal-title" id="detailTitle"></h2>
+                <button class="btn-close" id="detailClose" title="Zavřít">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="detail-row">
+                    <span class="detail-label">Popis</span>
+                    <span class="detail-value" id="detailDescription"></span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Datum a čas</span>
+                    <span class="detail-value" id="detailDateTime"></span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Kategorie</span>
+                    <span class="detail-value" id="detailCategory"></span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Místo</span>
+                    <span class="detail-value" id="detailLocation"></span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Priorita</span>
+                    <span class="detail-value" id="detailPriority"></span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Připomínka</span>
+                    <span class="detail-value" id="detailReminder"></span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Opakování</span>
+                    <span class="detail-value" id="detailRecurring"></span>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" id="detailEdit">Upravit</button>
+                <button class="btn btn-danger" id="detailDelete">Smazat</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Formulář události -->
+    <div class="modal-overlay" id="eventFormModal">
+        <div class="modal modal-form">
+            <div class="modal-header">
+                <h2 class="modal-title" id="formTitle">Nová událost</h2>
+                <button class="btn-close" id="formClose" title="Zavřít">×</button>
+            </div>
+            <div class="modal-body">
+                <form id="eventForm">
+                    <div class="form-group">
+                        <label class="form-label" for="inputTitle">Název *</label>
+                        <input class="form-input" type="text" id="inputTitle" name="title" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="inputDescription">Popis</label>
+                        <textarea class="form-input" id="inputDescription" name="description" rows="3"></textarea>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label" for="inputDate">Datum</label>
+                            <input class="form-input" type="date" id="inputDate" name="date" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="inputStartTime">Od</label>
+                            <input class="form-input" type="time" id="inputStartTime" name="startTime" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="inputEndTime">Do</label>
+                            <input class="form-input" type="time" id="inputEndTime" name="endTime" required>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label" for="inputCategory">Kategorie</label>
+                            <select class="form-input" id="inputCategory" name="category">
+                                <option value="work">💼 Práce</option>
+                                <option value="personal">🏠 Osobní</option>
+                                <option value="health">💪 Zdraví &amp; Sport</option>
+                                <option value="family">👨‍👩‍👧‍👦 Rodina</option>
+                                <option value="education">📚 Vzdělávání</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="inputPriority">Priorita</label>
+                            <select class="form-input" id="inputPriority" name="priority">
+                                <option value="low">Nízká</option>
+                                <option value="medium" selected>Střední</option>
+                                <option value="high">Vysoká</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="inputLocation">Místo</label>
+                        <input class="form-input" type="text" id="inputLocation" name="location">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="inputReminder">Připomínka (minuty před)</label>
+                        <input class="form-input" type="number" id="inputReminder" name="reminder" min="0" placeholder="15">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label form-label-inline">
+                            <input type="checkbox" id="recurringCheckbox" name="recurring">
+                            Opakuje se týdně
+                        </label>
+                        <div class="recurring-days" id="recurringDays">
+                            <label class="day-checkbox"><input type="checkbox" data-day="mon"> Po</label>
+                            <label class="day-checkbox"><input type="checkbox" data-day="tue"> Út</label>
+                            <label class="day-checkbox"><input type="checkbox" data-day="wed"> St</label>
+                            <label class="day-checkbox"><input type="checkbox" data-day="thu"> Čt</label>
+                            <label class="day-checkbox"><input type="checkbox" data-day="fri"> Pá</label>
+                            <label class="day-checkbox"><input type="checkbox" data-day="sat"> So</label>
+                            <label class="day-checkbox"><input type="checkbox" data-day="sun"> Ne</label>
+                        </div>
+                    </div>
+                    <div class="form-footer">
+                        <button class="btn btn-secondary" type="button" id="formCancel">Zrušit</button>
+                        <button class="btn btn-primary" type="submit">Uložit</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

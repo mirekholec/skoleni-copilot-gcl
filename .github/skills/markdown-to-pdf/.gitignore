@@ -1,0 +1,5 @@
+# Vygenerované PDF soubory
+*.pdf
+
+# OS
+.DS_Store

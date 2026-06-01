@@ -1,0 +1,652 @@
+/* ===== CSS Reset (Eric Meyer) ===== */
+html, body, div, span, applet, object, iframe, h1, h2, h3, h4, h5, h6, p, blockquote, pre, a, abbr, acronym, address, big, cite, code, del, dfn, em, img, ins, kbd, q, s, samp, small, strike, b, sub, sup, tt, var, u, i, center, dl, dt, dd, ol, ul, li, fieldset, form, label, legend, table, caption, tbody, tfoot, thead, tr, th, td, article, aside, canvas, details, embed, figure, figcaption, footer, header, hgroup, menu, nav, output, ruby, section, summary, time, mark, audio, video { margin: 0; padding: 0; border: 0; font-size: 100%; font: inherit; vertical-align: baseline; }
+article, aside, details, figcaption, figure, footer, header, hgroup, menu, nav, section { display: block; }
+body { line-height: 1; }
+ol, ul { list-style: none; }
+blockquote, q { quotes: none; }
+blockquote:before, blockquote:after, q:before, q:after { content: ''; content: none; }
+table { border-collapse: collapse; border-spacing: 0; }
+
+/* ===== Společné nastavení a proměnné ===== */
+:root { --color-work: #4A90D9; --color-personal: #F0AD4E; --color-health: #5CB85C; --color-family: #E8913A; --color-education: #9B59B6; --hour-height: 60px; --sidebar-width: 240px; --header-height: 60px; --font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif; --color-bg: #f0f2f5; --color-surface: #ffffff; --color-border: #e0e0e0; --color-border-light: #f0f0f0; --color-text: #333333; --color-text-secondary: #666666; --color-text-light: #999999; --color-today: #e8f0fe; --color-working-hours: #ffffff; --color-non-working: #fafafa; --color-primary: #4A90D9; --color-primary-hover: #3a7bc8; --color-danger: #d9534f; --color-danger-hover: #c9302c; --radius: 6px; --radius-sm: 4px; --shadow: 0 2px 8px rgba(0, 0, 0, 0.1); --shadow-lg: 0 4px 20px rgba(0, 0, 0, 0.15); --transition: 0.2s ease; }
+*, *::before, *::after { box-sizing: border-box; }
+body { font-family: var(--font-family); font-size: 14px; line-height: 1.5; color: var(--color-text); background-color: var(--color-bg); }
+
+/* ===== Layout ===== */
+.app { display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
+.header { display: flex; align-items: center; justify-content: space-between; height: var(--header-height); padding: 0 20px; background-color: var(--color-surface); border-bottom: 1px solid var(--color-border); flex-shrink: 0; }
+.header-left { display: flex; align-items: center; gap: 12px; }
+.header-right { display: flex; align-items: center; gap: 8px; }
+.content { display: flex; flex: 1; overflow: hidden; }
+.sidebar { width: var(--sidebar-width); padding: 20px; background-color: var(--color-surface); border-right: 1px solid var(--color-border); flex-shrink: 0; overflow-y: auto; }
+.calendar { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+.calendar-header { display: grid; grid-template-columns: 60px repeat(7, 1fr); border-bottom: 1px solid var(--color-border); background-color: var(--color-surface); flex-shrink: 0; }
+.calendar-body { display: grid; grid-template-columns: 60px repeat(7, 1fr); flex: 1; overflow-y: auto; position: relative; }
+
+/* ===== Komponenty ===== */
+
+/* Typografie */
+.app-title {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--color-text);
+}
+
+.week-number {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--color-primary);
+    background-color: var(--color-today);
+    padding: 3px 10px;
+    border-radius: var(--radius);
+}
+
+.week-range {
+    font-size: 14px;
+    color: var(--color-text-secondary);
+}
+
+/* Tlačítka */
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 6px 16px;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+    background-color: var(--color-surface);
+    color: var(--color-text);
+    font-family: var(--font-family);
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color var(--transition), border-color var(--transition);
+}
+
+.btn:hover {
+    background-color: var(--color-bg);
+}
+
+.btn-nav {
+    padding: 6px 10px;
+    font-size: 12px;
+}
+
+.btn-today {
+    font-weight: 600;
+    color: var(--color-primary);
+    border-color: var(--color-primary);
+}
+
+.btn-today:hover {
+    background-color: var(--color-today);
+}
+
+.btn-primary {
+    background-color: var(--color-primary);
+    border-color: var(--color-primary);
+    color: #ffffff;
+}
+
+.btn-primary:hover {
+    background-color: var(--color-primary-hover);
+}
+
+.btn-secondary {
+    background-color: var(--color-surface);
+    border-color: var(--color-border);
+    color: var(--color-text-secondary);
+}
+
+.btn-danger {
+    background-color: var(--color-danger);
+    border-color: var(--color-danger);
+    color: #ffffff;
+}
+
+.btn-danger:hover {
+    background-color: var(--color-danger-hover);
+}
+
+.btn-close {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border: none;
+    border-radius: 50%;
+    background: none;
+    font-size: 20px;
+    color: var(--color-text-secondary);
+    cursor: pointer;
+    transition: background-color var(--transition);
+}
+
+.btn-close:hover {
+    background-color: var(--color-bg);
+}
+
+/* Sidebar – kategorie */
+.sidebar-title {
+    font-size: 13px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--color-text-secondary);
+    margin-bottom: 12px;
+}
+
+.category-list {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.category-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 10px;
+    border-radius: var(--radius);
+    cursor: pointer;
+    transition: background-color var(--transition);
+}
+
+.category-item:hover {
+    background-color: var(--color-bg);
+}
+
+.category-checkbox {
+    cursor: pointer;
+}
+
+.category-indicator {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.category-name {
+    font-size: 14px;
+    color: var(--color-text);
+}
+
+/* Kalendář – hlavička */
+.calendar-header-spacer {
+    border-right: 1px solid var(--color-border);
+}
+
+.calendar-header-cell {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 8px 4px;
+    border-right: 1px solid var(--color-border-light);
+}
+
+.calendar-header-cell.is-today .day-date {
+    background-color: var(--color-primary);
+    color: #ffffff;
+    border-radius: 50%;
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.day-name {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--color-text-secondary);
+    margin-bottom: 2px;
+}
+
+.day-date {
+    font-size: 16px;
+    font-weight: 500;
+    color: var(--color-text);
+}
+
+/* Kalendář – časová osa */
+.time-column {
+    border-right: 1px solid var(--color-border);
+    background-color: var(--color-surface);
+}
+
+.time-label {
+    height: var(--hour-height);
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding-top: 2px;
+    font-size: 11px;
+    color: var(--color-text-light);
+}
+
+/* Kalendář – sloupce dnů */
+.day-column {
+    position: relative;
+    border-right: 1px solid var(--color-border-light);
+}
+
+.day-column.is-today {
+    background-color: var(--color-today);
+}
+
+.hour-slot {
+    height: var(--hour-height);
+    border-bottom: 1px solid var(--color-border-light);
+    cursor: pointer;
+    transition: background-color var(--transition);
+    background-color: var(--color-non-working);
+}
+
+.hour-slot.working-hour {
+    background-color: var(--color-working-hours);
+}
+
+.day-column.is-today .hour-slot {
+    background-color: var(--color-today);
+}
+
+.hour-slot:hover {
+    background-color: #e8eaed;
+}
+
+/* Kalendář – bloky událostí */
+.event-block {
+    position: absolute;
+    left: 2px;
+    right: 2px;
+    min-height: 22px;
+    padding: 3px 6px;
+    border-radius: var(--radius-sm);
+    color: #ffffff;
+    font-size: 12px;
+    overflow: hidden;
+    cursor: pointer;
+    z-index: 1;
+    transition: opacity var(--transition), box-shadow var(--transition);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.event-block:hover {
+    opacity: 0.9;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+    z-index: 2;
+}
+
+.event-title {
+    display: block;
+    font-weight: 600;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    line-height: 1.3;
+}
+
+.event-time {
+    display: block;
+    font-size: 11px;
+    opacity: 0.9;
+    line-height: 1.3;
+}
+
+.event-location {
+    display: block;
+    font-size: 11px;
+    opacity: 0.8;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    line-height: 1.3;
+}
+
+/* Modály */
+.modal-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.4);
+    z-index: 100;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-overlay.is-visible {
+    display: flex;
+}
+
+.modal {
+    background-color: var(--color-surface);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-lg);
+    width: 100%;
+    max-width: 480px;
+    max-height: 90vh;
+    overflow-y: auto;
+    animation: modalIn 0.2s ease;
+}
+
+.modal-form {
+    max-width: 540px;
+}
+
+@keyframes modalIn {
+    from {
+        opacity: 0;
+        transform: scale(0.95) translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+}
+
+.modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--color-border-light);
+}
+
+.modal-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--color-text);
+}
+
+.modal-body {
+    padding: 20px;
+}
+
+.modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    padding: 16px 20px;
+    border-top: 1px solid var(--color-border-light);
+}
+
+/* Detail události */
+.detail-row {
+    display: flex;
+    padding: 8px 0;
+    border-bottom: 1px solid var(--color-border-light);
+}
+
+.detail-row:last-child {
+    border-bottom: none;
+}
+
+.detail-label {
+    width: 120px;
+    flex-shrink: 0;
+    font-weight: 600;
+    font-size: 13px;
+    color: var(--color-text-secondary);
+}
+
+.detail-value {
+    flex: 1;
+    font-size: 14px;
+    color: var(--color-text);
+}
+
+/* Formulář události */
+.form-group {
+    margin-bottom: 14px;
+}
+
+.form-label {
+    display: block;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--color-text-secondary);
+    margin-bottom: 4px;
+}
+
+.form-label-inline {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    font-weight: 500;
+    color: var(--color-text);
+    margin-bottom: 8px;
+}
+
+.form-input {
+    display: block;
+    width: 100%;
+    padding: 8px 10px;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    font-family: var(--font-family);
+    font-size: 14px;
+    color: var(--color-text);
+    background-color: var(--color-surface);
+    transition: border-color var(--transition);
+}
+
+.form-input:focus {
+    outline: none;
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 2px rgba(74, 144, 217, 0.2);
+}
+
+textarea.form-input {
+    resize: vertical;
+}
+
+.form-row {
+    display: flex;
+    gap: 12px;
+}
+
+.form-row .form-group {
+    flex: 1;
+}
+
+.recurring-days {
+    display: none;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 8px 0;
+}
+
+.recurring-days.is-visible {
+    display: flex;
+}
+
+.day-checkbox {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 13px;
+    cursor: pointer;
+    color: var(--color-text);
+}
+
+.form-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    padding-top: 16px;
+    border-top: 1px solid var(--color-border-light);
+    margin-top: 4px;
+}
+
+/* Responzivní design */
+@media (max-width: 768px) {
+    .sidebar {
+        display: none;
+    }
+
+    .header {
+        padding: 0 12px;
+        flex-wrap: wrap;
+        height: auto;
+        padding-top: 8px;
+        padding-bottom: 8px;
+        gap: 4px;
+    }
+
+    .header-left {
+        flex-wrap: wrap;
+    }
+
+    .header-right {
+        order: 2;
+    }
+
+    .app-title {
+        font-size: 16px;
+    }
+
+    .week-number {
+        font-size: 13px;
+    }
+
+    .week-range {
+        display: none;
+    }
+
+    .calendar-header {
+        grid-template-columns: 40px repeat(7, 1fr);
+    }
+
+    .calendar-body {
+        grid-template-columns: 40px repeat(7, 1fr);
+    }
+
+    .day-name {
+        font-size: 10px;
+    }
+
+    .day-date {
+        font-size: 14px;
+    }
+
+    .time-label {
+        font-size: 10px;
+    }
+
+    .event-block {
+        font-size: 11px;
+        padding: 2px 4px;
+    }
+
+    .modal {
+        margin: 12px;
+        max-width: calc(100% - 24px);
+    }
+
+    .form-row {
+        flex-direction: column;
+        gap: 0;
+    }
+}
+
+/* ===== Tisk ===== */
+
+/* Záhlaví pro tisk – skryté při normálním zobrazení */
+.print-header {
+    display: none;
+}
+
+@media print {
+    @page {
+        size: landscape;
+        margin: 1cm;
+    }
+
+    /* Skrytí nepotřebných prvků */
+    .header,
+    .sidebar,
+    .modal-overlay,
+    .btn {
+        display: none !important;
+    }
+
+    /* Zobrazení záhlaví pro tisk */
+    .print-header {
+        display: block;
+        padding: 0 0 8px 0;
+        border-bottom: 2px solid #333333;
+        margin-bottom: 8px;
+        font-family: Georgia, 'Times New Roman', serif;
+    }
+
+    .print-title {
+        font-size: 18px;
+        font-weight: bold;
+        color: #000000;
+    }
+
+    .print-week-range {
+        font-size: 13px;
+        color: #444444;
+        margin-left: 12px;
+    }
+
+    /* Layout reset */
+    .app {
+        height: auto;
+        overflow: visible;
+        display: block;
+    }
+
+    .content {
+        display: block;
+        overflow: visible;
+    }
+
+    /* Kalendář – plná šířka */
+    .calendar {
+        width: 100%;
+        overflow: visible;
+    }
+
+    .calendar-body {
+        overflow: visible;
+        height: auto;
+    }
+
+    /* Typografie pro tisk */
+    body {
+        font-family: Georgia, 'Times New Roman', serif;
+        font-size: 12px;
+        color: #000000;
+        background: #ffffff;
+    }
+
+    /* Bloky událostí – přidán silnější levý okraj jako fallback pro ČB tisk */
+    .event-block {
+        border-left: 4px solid currentColor;
+        box-shadow: none;
+        color: #000000 !important;
+        background-color: #f5f5f5 !important;
+        border-radius: 0;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+    }
+
+    .event-title,
+    .event-time,
+    .event-location {
+        color: #000000;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+}
