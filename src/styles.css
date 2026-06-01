@@ -188,7 +188,6 @@ body { font-family: var(--font-family); font-size: 14px; line-height: 1.5; color
 
 .calendar-header-cell.is-today {
     background-color: #1a1a1a;
-    aspect-ratio: 1;
 }
 
 .calendar-header-cell.is-today .day-name {
