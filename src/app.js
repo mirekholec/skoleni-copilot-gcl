@@ -13,11 +13,11 @@ const DAY_NAMES = ['Pondělí', 'Úterý', 'Středa', 'Čtvrtek', 'Pátek', 'Sob
 const DAY_KEYS = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'];
 
 const DEFAULT_CATEGORIES = [
-    { id: 'work', name: 'Práce', icon: '💼', color: '#4A90D9' },
-    { id: 'personal', name: 'Osobní', icon: '🏠', color: '#F0AD4E' },
-    { id: 'health', name: 'Zdraví & Sport', icon: '💪', color: '#5CB85C' },
-    { id: 'family', name: 'Rodina', icon: '👨‍👩‍👧‍👦', color: '#E8913A' },
-    { id: 'education', name: 'Vzdělávání', icon: '📚', color: '#9B59B6' }
+    { id: 'work', name: 'Práce', icon: '💼', color: '#FFF59D' },
+    { id: 'personal', name: 'Osobní', icon: '🏠', color: '#FFF59D' },
+    { id: 'health', name: 'Zdraví & Sport', icon: '💪', color: '#FFF59D' },
+    { id: 'family', name: 'Rodina', icon: '👨‍👩‍👧‍👦', color: '#FFF59D' },
+    { id: 'education', name: 'Vzdělávání', icon: '📚', color: '#FFF59D' }
 ];
 
 const DEFAULT_SETTINGS = {
