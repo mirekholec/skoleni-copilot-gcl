@@ -17,7 +17,9 @@ const DEFAULT_CATEGORIES = [
     { id: 'personal', name: 'Osobní', icon: '🏠', color: '#F0AD4E' },
     { id: 'health', name: 'Zdraví & Sport', icon: '💪', color: '#5CB85C' },
     { id: 'family', name: 'Rodina', icon: '👨‍👩‍👧‍👦', color: '#E8913A' },
-    { id: 'education', name: 'Vzdělávání', icon: '📚', color: '#9B59B6' }
+    { id: 'education', name: 'Vzdělávání', icon: '📚', color: '#9B59B6' },
+    { id: 'golf', name: 'Golf', icon: '⛳', color: '#16A34A' },
+    { id: 'entertainment', name: 'Zábava', icon: '🎬', color: '#06B6D4' }
 ];
 
 const DEFAULT_SETTINGS = {
@@ -27,7 +29,7 @@ const DEFAULT_SETTINGS = {
     defaultReminderMinutes: 15,
     timeFormat: '24h',
     locale: 'cs-CZ',
-    activeCategories: ['work', 'personal', 'health', 'family', 'education']
+    activeCategories: ['work', 'personal', 'health', 'family', 'education', 'golf', 'entertainment']
 };
 
 // ===== Stav aplikace =====
