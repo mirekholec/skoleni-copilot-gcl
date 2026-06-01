@@ -303,6 +303,11 @@ function createEventBlock(event) {
     block.style.height = `${Math.max(height, 22)}px`;
     block.style.backgroundColor = event.color;
     block.dataset.eventId = event.id;
+    
+    // Add priority class
+    if (event.priority) {
+        block.classList.add('priority-' + event.priority);
+    }
 
     const title = document.createElement('span');
     title.className = 'event-title';

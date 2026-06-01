@@ -281,6 +281,22 @@ body { font-family: var(--font-family); font-size: 14px; line-height: 1.5; color
     z-index: 2;
 }
 
+/* Priority indicators */
+.priority-low {
+    border-left: 10px solid #22C55E;
+    padding-left: 6px;
+}
+
+.priority-medium {
+    border-left: 10px solid #F59E0B;
+    padding-left: 6px;
+}
+
+.priority-high {
+    border-left: 10px solid #EF4444;
+    padding-left: 6px;
+}
+
 .event-title {
     display: block;
     font-weight: 600;
