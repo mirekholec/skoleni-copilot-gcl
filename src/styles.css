@@ -266,7 +266,8 @@ body { font-family: var(--font-family); font-size: 14px; line-height: 1.5; color
     min-height: 22px;
     padding: 3px 6px;
     border-radius: var(--radius-sm);
-    color: #ffffff;
+    background-color: #ffcccc !important;
+    color: #333333 !important;
     font-size: 12px;
     overflow: hidden;
     cursor: pointer;
