@@ -186,15 +186,17 @@ body { font-family: var(--font-family); font-size: 14px; line-height: 1.5; color
     border-right: 1px solid var(--color-border-light);
 }
 
-.calendar-header-cell.is-today .day-date {
-    background-color: var(--color-primary);
+.calendar-header-cell.is-today {
+    background-color: #4a4a4a;
+}
+
+.calendar-header-cell.is-today .day-name {
     color: #ffffff;
-    border-radius: 50%;
-    width: 28px;
-    height: 28px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+}
+
+.calendar-header-cell.is-today .day-date {
+    color: #ffffff;
+    font-weight: 600;
 }
 
 .day-name {
