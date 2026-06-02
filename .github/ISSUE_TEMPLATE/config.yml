@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: 🐞 Nahlášení chyby
+    url: https://holec.ai/hlaseni-chyby
+    about: Použijte pro nahlášení chyb na webu
+  - name: 📋 Nový task
+    url: https://holec.ai
+    about: Použijte pro zadání úkolu
