@@ -24,6 +24,7 @@
                 <span class="week-range" id="weekRange"></span>
             </div>
             <div class="header-right">
+                <button class="btn btn-nav" id="btnStats" title="Statistiky">📊</button>
                 <button class="btn btn-nav" id="btnPrint" title="Tisk týdenního rozvrhu">🖨️</button>
                 <button class="btn btn-nav" id="btnPrev" title="Předchozí týden">◀</button>
                 <button class="btn btn-today" id="btnToday">Dnes</button>
@@ -175,6 +176,33 @@
                         <button class="btn btn-primary" type="submit">Uložit</button>
                     </div>
                 </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Statistiky -->
+    <div class="modal-overlay" id="statsModal">
+        <div class="modal modal-stats">
+            <div class="modal-header stats-modal-header">
+                <h2 class="modal-title">📊 Statistiky</h2>
+                <div class="stats-period-switcher">
+                    <button class="btn btn-stats-period is-active" data-period="week">Tento týden</button>
+                    <button class="btn btn-stats-period" data-period="month">Tento měsíc</button>
+                </div>
+                <button class="btn-close" id="statsClose" title="Zavřít">×</button>
+            </div>
+            <div class="modal-body stats-modal-body">
+                <div class="stats-cards" id="statsCards"></div>
+                <div class="stats-charts">
+                    <div class="stats-chart-section">
+                        <h3 class="stats-chart-title">Rozložení kategorií</h3>
+                        <div id="donutChart"></div>
+                    </div>
+                    <div class="stats-chart-section stats-chart-section--bar">
+                        <h3 class="stats-chart-title">Hodiny po dnech</h3>
+                        <div id="barChart"></div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
