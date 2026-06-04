@@ -716,9 +716,9 @@ function getStatsPeriodDays(period) {
         end = new Date(start);
         end.setDate(end.getDate() + 6);
     } else {
-        const now = new Date();
-        start = new Date(now.getFullYear(), now.getMonth(), 1);
-        end = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+        const base = new Date(state.currentWeekStart);
+        start = new Date(base.getFullYear(), base.getMonth(), 1);
+        end = new Date(base.getFullYear(), base.getMonth() + 1, 0);
     }
 
     const current = new Date(start);
