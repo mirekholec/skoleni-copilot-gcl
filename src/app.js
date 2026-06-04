@@ -622,6 +622,20 @@ function toggleRecurringDays(show) {
 // ===== Registrace event listenerů =====
 
 function setupEventListeners() {
+    // Statistiky
+    document.getElementById('btnStats').addEventListener('click', openStats);
+    document.getElementById('statsClose').addEventListener('click', closeStats);
+    document.getElementById('statsModal').addEventListener('click', (e) => {
+        if (e.target === document.getElementById('statsModal')) closeStats();
+    });
+    document.querySelectorAll('.btn-stats-period').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            document.querySelectorAll('.btn-stats-period').forEach(b => b.classList.remove('is-active'));
+            e.currentTarget.classList.add('is-active');
+            renderStats();
+        });
+    });
+
     // Navigační tlačítka
     document.getElementById('btnPrev').addEventListener('click', () => navigateWeek(-1));
     document.getElementById('btnNext').addEventListener('click', () => navigateWeek(1));
@@ -664,6 +678,318 @@ function setupEventListeners() {
         if (e.key === 'Escape') {
             hideEventDetail();
             hideEventForm();
+            closeStats();
         }
     });
+}
+
+// ===== Statistiky =====
+
+// Barvy kategorií pro grafy
+const CATEGORY_CHART_COLORS = {
+    work: '#4A90D9',
+    personal: '#F48FB1',
+    health: '#66BB6A',
+    family: '#E8913A',
+    education: '#AB47BC',
+    entertainment: '#26C6DA'
+};
+
+/** Otevření panelu statistik */
+function openStats() {
+    renderStats();
+    document.getElementById('statsModal').classList.add('is-visible');
+}
+
+/** Zavření panelu statistik */
+function closeStats() {
+    document.getElementById('statsModal').classList.remove('is-visible');
+}
+
+/** Vrátí pole Date objektů pro každý den zvoleného období */
+function getStatsPeriodDays(period) {
+    const days = [];
+    let start, end;
+
+    if (period === 'week') {
+        start = new Date(state.currentWeekStart);
+        end = new Date(start);
+        end.setDate(end.getDate() + 6);
+    } else {
+        const now = new Date();
+        start = new Date(now.getFullYear(), now.getMonth(), 1);
+        end = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+    }
+
+    const current = new Date(start);
+    while (current <= end) {
+        days.push(new Date(current));
+        current.setDate(current.getDate() + 1);
+    }
+    return days;
+}
+
+/** Vypočítá délku události v hodinách */
+function getEventDurationHours(event) {
+    const startMin = timeToMinutes(event.startTime);
+    const endMin = timeToMinutes(event.endTime);
+    return Math.max(0, (endMin - startMin) / 60);
+}
+
+/** Agreguje statistická data pro zvolené období */
+function computeStatsData(period) {
+    const days = getStatsPeriodDays(period);
+
+    let totalEvents = 0;
+    let totalHours = 0;
+    const hoursByCategory = {};
+
+    DEFAULT_CATEGORIES.forEach(c => { hoursByCategory[c.id] = 0; });
+
+    const dayData = days.map(date => {
+        const events = getEventsForDate(date);
+        const activeEvents = events.filter(e => state.settings.activeCategories.includes(e.category));
+
+        const entry = {
+            date,
+            dateStr: getDateString(date),
+            eventCount: activeEvents.length,
+            hoursByCategory: {}
+        };
+        DEFAULT_CATEGORIES.forEach(c => { entry.hoursByCategory[c.id] = 0; });
+
+        activeEvents.forEach(event => {
+            const h = getEventDurationHours(event);
+            totalHours += h;
+            totalEvents++;
+            if (hoursByCategory[event.category] !== undefined) {
+                hoursByCategory[event.category] += h;
+            }
+            if (entry.hoursByCategory[event.category] !== undefined) {
+                entry.hoursByCategory[event.category] += h;
+            }
+        });
+
+        return entry;
+    });
+
+    // Výpočet volného pracovního času
+    const workStart = timeToMinutes(state.settings.workingHours.start);
+    const workEnd = timeToMinutes(state.settings.workingHours.end);
+    const workingHoursPerDay = Math.max(0, (workEnd - workStart) / 60);
+    const workingDaysCount = days.filter(d => d.getDay() !== 0 && d.getDay() !== 6).length;
+    const freeTime = Math.max(0, workingHoursPerDay * workingDaysCount - (hoursByCategory['work'] || 0));
+
+    // Nejzaneprázdněnější den
+    const busiestDay = dayData.reduce((best, day) =>
+        !best || day.eventCount > best.eventCount ? day : best, null);
+
+    // Nejčastější kategorie podle hodin
+    const topCategoryEntry = Object.entries(hoursByCategory)
+        .filter(([, h]) => h > 0)
+        .sort((a, b) => b[1] - a[1])[0];
+    const topCategory = topCategoryEntry
+        ? DEFAULT_CATEGORIES.find(c => c.id === topCategoryEntry[0])
+        : null;
+
+    const avgEventsPerDay = days.length > 0
+        ? (totalEvents / days.length).toFixed(1)
+        : '0.0';
+
+    return {
+        totalEvents,
+        totalHours: totalHours.toFixed(1),
+        freeTime: freeTime.toFixed(1),
+        busiestDay: busiestDay && busiestDay.eventCount > 0 ? busiestDay : null,
+        topCategory,
+        avgEventsPerDay,
+        hoursByCategory,
+        dayData
+    };
+}
+
+/** Hlavní renderování statistik – čte aktivní periodu a překreslí vše */
+function renderStats() {
+    const activeBtn = document.querySelector('.btn-stats-period.is-active');
+    const period = activeBtn ? activeBtn.dataset.period : 'week';
+    const data = computeStatsData(period);
+
+    renderStatCards(data);
+    renderDonutChart(data);
+    renderBarChart(data);
+}
+
+/** Vykreslení karet s číselnými statistikami */
+function renderStatCards(data) {
+    const container = document.getElementById('statsCards');
+
+    const busiestDayLabel = data.busiestDay
+        ? data.busiestDay.date.toLocaleDateString('cs-CZ', { weekday: 'long', day: 'numeric', month: 'short' })
+        : '—';
+
+    const topCategoryLabel = data.topCategory
+        ? `${data.topCategory.icon} ${data.topCategory.name}`
+        : '—';
+
+    const cards = [
+        { label: 'Celkem událostí', value: data.totalEvents, icon: '📅' },
+        { label: 'Celkem hodin', value: `${data.totalHours} h`, icon: '⏱️' },
+        { label: 'Volný čas (prac. doba)', value: `${data.freeTime} h`, icon: '🌿' },
+        { label: 'Nejzaneprázdněnější den', value: busiestDayLabel, icon: '🔥', small: true },
+        { label: 'Nejčastější kategorie', value: topCategoryLabel, icon: '🏆', small: true },
+        { label: 'Průměr událostí / den', value: data.avgEventsPerDay, icon: '📈' }
+    ];
+
+    container.innerHTML = cards.map(card => `
+        <div class="stat-card">
+            <span class="stat-card-icon">${card.icon}</span>
+            <span class="stat-card-value${card.small ? ' stat-card-value--small' : ''}">${card.value}</span>
+            <span class="stat-card-label">${card.label}</span>
+        </div>
+    `).join('');
+}
+
+/** Vykreslení donut grafu kategorie vs. hodiny pomocí inline SVG */
+function renderDonutChart(data) {
+    const container = document.getElementById('donutChart');
+    const { hoursByCategory } = data;
+    const total = Object.values(hoursByCategory).reduce((s, h) => s + h, 0);
+
+    if (total === 0) {
+        container.innerHTML = '<p class="stats-no-data">Žádné události v tomto období.</p>';
+        return;
+    }
+
+    const size = 180;
+    const cx = size / 2;
+    const cy = size / 2;
+    const outerR = 72;
+    const innerR = 42;
+
+    const segments = DEFAULT_CATEGORIES
+        .filter(cat => hoursByCategory[cat.id] > 0)
+        .map(cat => ({
+            id: cat.id,
+            name: cat.name,
+            icon: cat.icon,
+            hours: hoursByCategory[cat.id],
+            color: CATEGORY_CHART_COLORS[cat.id] || '#999999',
+            pct: hoursByCategory[cat.id] / total
+        }));
+
+    let angle = -Math.PI / 2;
+    const paths = segments.map(seg => {
+        const sweep = seg.pct * 2 * Math.PI;
+        const endAngle = angle + sweep;
+        const x1 = cx + outerR * Math.cos(angle);
+        const y1 = cy + outerR * Math.sin(angle);
+        const x2 = cx + outerR * Math.cos(endAngle);
+        const y2 = cy + outerR * Math.sin(endAngle);
+        const xi1 = cx + innerR * Math.cos(angle);
+        const yi1 = cy + innerR * Math.sin(angle);
+        const xi2 = cx + innerR * Math.cos(endAngle);
+        const yi2 = cy + innerR * Math.sin(endAngle);
+        const largeArc = sweep > Math.PI ? 1 : 0;
+        const d = `M ${x1.toFixed(2)} ${y1.toFixed(2)} A ${outerR} ${outerR} 0 ${largeArc} 1 ${x2.toFixed(2)} ${y2.toFixed(2)} L ${xi2.toFixed(2)} ${yi2.toFixed(2)} A ${innerR} ${innerR} 0 ${largeArc} 0 ${xi1.toFixed(2)} ${yi1.toFixed(2)} Z`;
+        angle = endAngle;
+        return `<path d="${d}" fill="${seg.color}" class="donut-segment">
+            <title>${seg.icon} ${seg.name}: ${seg.hours.toFixed(1)} h (${Math.round(seg.pct * 100)} %)</title>
+        </path>`;
+    });
+
+    const legendItems = segments.map(seg =>
+        `<div class="donut-legend-item">
+            <span class="donut-legend-dot" style="background:${seg.color}"></span>
+            <span class="donut-legend-name">${seg.icon} ${seg.name}</span>
+            <span class="donut-legend-hours">${seg.hours.toFixed(1)} h</span>
+        </div>`
+    ).join('');
+
+    container.innerHTML = `
+        <div class="donut-wrapper">
+            <svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}" class="donut-svg">
+                ${paths.join('')}
+                <text x="${cx}" y="${cy - 5}" text-anchor="middle" class="donut-center-value">${total.toFixed(1)}</text>
+                <text x="${cx}" y="${cy + 13}" text-anchor="middle" class="donut-center-unit">hodin</text>
+            </svg>
+            <div class="donut-legend">${legendItems}</div>
+        </div>
+    `;
+}
+
+/** Vykreslení stacked sloupcového grafu hodin po dnech pomocí inline SVG */
+function renderBarChart(data) {
+    const container = document.getElementById('barChart');
+    const { dayData } = data;
+
+    if (dayData.length === 0) {
+        container.innerHTML = '<p class="stats-no-data">Žádné události v tomto období.</p>';
+        return;
+    }
+
+    const paddingLeft = 36;
+    const paddingRight = 8;
+    const paddingTop = 10;
+    const paddingBottom = 36;
+    const svgHeight = 200;
+    const minSvgWidth = 420;
+    const barGap = dayData.length > 14 ? 2 : 4;
+    const barWidth = Math.min(30, Math.max(8, Math.floor((minSvgWidth - paddingLeft - paddingRight) / dayData.length) - barGap));
+    const totalBarsWidth = dayData.length * (barWidth + barGap);
+    const svgWidth = Math.max(minSvgWidth, paddingLeft + totalBarsWidth + paddingRight);
+    const chartW = svgWidth - paddingLeft - paddingRight;
+    const chartH = svgHeight - paddingTop - paddingBottom;
+
+    // Maximální výška sloupce v hodinách
+    const maxH = dayData.reduce((m, day) => {
+        const s = Object.values(day.hoursByCategory).reduce((a, b) => a + b, 0);
+        return Math.max(m, s);
+    }, 0);
+    const yMax = Math.max(1, Math.ceil(maxH));
+
+    // Osa Y – mřížka a popisky
+    const ySteps = Math.min(yMax, 5);
+    const yLines = Array.from({ length: ySteps + 1 }, (_, i) => {
+        const val = Math.round((yMax / ySteps) * i * 10) / 10;
+        const y = paddingTop + chartH - (val / yMax) * chartH;
+        return `<line x1="${paddingLeft}" y1="${y.toFixed(1)}" x2="${svgWidth - paddingRight}" y2="${y.toFixed(1)}" stroke="#e0e0e0" stroke-width="1"/>
+                <text x="${(paddingLeft - 4).toFixed(1)}" y="${(y + 4).toFixed(1)}" text-anchor="end" class="bar-axis-label">${val}</text>`;
+    });
+
+    // Sloupce
+    const slotW = chartW / dayData.length;
+    const bars = dayData.map((day, i) => {
+        const x = paddingLeft + i * slotW + (slotW - barWidth) / 2;
+        let yOff = paddingTop + chartH;
+
+        const rects = DEFAULT_CATEGORIES
+            .filter(cat => day.hoursByCategory[cat.id] > 0)
+            .map(cat => {
+                const h = day.hoursByCategory[cat.id];
+                const bH = (h / yMax) * chartH;
+                yOff -= bH;
+                const color = CATEGORY_CHART_COLORS[cat.id] || '#999999';
+                return `<rect x="${x.toFixed(1)}" y="${yOff.toFixed(1)}" width="${barWidth}" height="${bH.toFixed(1)}" fill="${color}" rx="2">
+                    <title>${cat.icon} ${cat.name}: ${h.toFixed(1)} h</title>
+                </rect>`;
+            });
+
+        const useShortLabel = dayData.length > 14;
+        const label = day.date.toLocaleDateString('cs-CZ', useShortLabel
+            ? { day: 'numeric', month: 'numeric' }
+            : { day: 'numeric', month: 'short' });
+
+        return `${rects.join('')}
+            <text x="${(x + barWidth / 2).toFixed(1)}" y="${(svgHeight - paddingBottom + 14).toFixed(1)}" text-anchor="middle" class="bar-day-label">${label}</text>`;
+    });
+
+    container.innerHTML = `
+        <div class="bar-chart-scroll">
+            <svg width="${svgWidth}" height="${svgHeight}" viewBox="0 0 ${svgWidth} ${svgHeight}" class="bar-svg">
+                ${yLines.join('')}
+                <line x1="${paddingLeft}" y1="${paddingTop}" x2="${paddingLeft}" y2="${paddingTop + chartH}" stroke="#cccccc" stroke-width="1"/>
+                ${bars.join('')}
+            </svg>
+        </div>
+    `;
 }
